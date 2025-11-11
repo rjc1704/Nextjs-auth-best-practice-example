@@ -1,4 +1,4 @@
-import { getTokenFromCookie } from "@/lib/utils/auth";
+import { getServerSideToken } from "./actions/auth";
 
 /**
  * 기본 fetch 클라이언트 - 인증이 필요 없는 일반 요청용
@@ -37,7 +37,7 @@ export const defaultFetch = async (url, options = {}) => {
  */
 export const tokenFetch = async (url, options = {}) => {
   const baseURL = process.env.NEXT_PUBLIC_API_URL;
-  const token = await getTokenFromCookie();
+  const token = await getServerSideToken("accessToken");
   const defaultOptions = {
     headers: {
       "Content-Type": "application/json",
@@ -63,7 +63,7 @@ export const tokenFetch = async (url, options = {}) => {
   if (response.status === 401 && url !== "/auth/refresh") {
     try {
       // 토큰 갱신 요청
-      const refreshToken = getTokenFromCookie();
+      const refreshToken = await getServerSideToken("refreshToken");
       const refreshResponse = await fetch(`${baseURL}/auth/refresh`, {
         method: "POST",
         headers: {

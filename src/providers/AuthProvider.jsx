@@ -1,9 +1,14 @@
 "use client";
 
-import { loginAction, registerAction } from "@/lib/actions/auth";
+import {
+  getServerSideToken,
+  loginAction,
+  registerAction,
+  setServerSideTokens,
+} from "@/lib/actions/auth";
 import { authService } from "@/lib/service/authService";
 import { userService } from "@/lib/service/userService";
-import { getTokenFromCookie, setTokensToCookie } from "@/lib/utils/auth";
+
 import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext({
@@ -48,7 +53,7 @@ export default function AuthProvider({ children }) {
 
     // 토큰 저장 로직 추가
     if (userData.accessToken && userData.refreshToken) {
-      setTokensToCookie(userData.accessToken, userData.refreshToken);
+      setServerSideTokens(userData.accessToken, userData.refreshToken);
     }
     setUser(userData.user);
   };
@@ -59,7 +64,7 @@ export default function AuthProvider({ children }) {
 
     // 토큰 저장 로직 추가
     if (userData.accessToken && userData.refreshToken) {
-      setTokensToCookie(userData.accessToken, userData.refreshToken);
+      setServerSideTokens(userData.accessToken, userData.refreshToken);
     }
 
     setUser(userData.user);
@@ -68,9 +73,6 @@ export default function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await authService.logout();
-      // 쿠키 삭제
-      document.cookie = "accessToken=; path=/; max-age=0; SameSite=Strict";
-      document.cookie = "refreshToken=; path=/; max-age=0; SameSite=Strict";
       setUser(null);
     } catch (error) {
       console.error("로그아웃 실패:", error);
@@ -80,7 +82,7 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     // 웹페이지 랜딩 또는 새로고침 시 마다 서버에서 유저 데이터 동기화
     async function fetchUser() {
-      const token = await getTokenFromCookie();
+      const token = await getServerSideToken();
       if (token) {
         getUser().then(() => {
           setIsLoading(false);
@@ -94,7 +96,7 @@ export default function AuthProvider({ children }) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="fixed inset-0 flex justify-center items-center bg-white/60 z-50">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );

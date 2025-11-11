@@ -85,7 +85,7 @@ export default function EditBlogPage() {
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="my-6">
         <Link
           href={`/blogs/${id}`}
           className="text-blue-500 hover:text-blue-700"

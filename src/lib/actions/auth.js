@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { authService } from "../service/authService";
 
 // 서버 사이드 전용 함수
-export async function getServerSideToken(type) {
+export async function getServerSideToken(type = "accessToken") {
   const cookieStore = await cookies();
   const tokenCookie = cookieStore.get(type);
   return tokenCookie ? tokenCookie.value : null;
@@ -28,12 +28,16 @@ export async function setServerSideTokens(accessToken, refreshToken) {
     path: "/",
     maxAge: accessTokenExpiresIn,
     sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
   });
 
   cookieStore.set("refreshToken", refreshToken, {
     path: "/",
     maxAge: refreshTokenExpiresIn,
     sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
   });
 }
 
@@ -51,6 +55,8 @@ export async function updateAccessToken(accessToken) {
     path: "/",
     maxAge: accessTokenExpiresIn,
     sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
   });
 }
 

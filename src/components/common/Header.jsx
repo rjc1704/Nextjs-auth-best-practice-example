@@ -6,6 +6,7 @@ import { useAuth } from "@/providers/AuthProvider";
 
 export default function Header() {
   const { user, logout } = useAuth();
+
   const pathname = usePathname();
   const router = useRouter();
 
@@ -40,7 +41,6 @@ export default function Header() {
               <button
                 onClick={async () => {
                   await logout();
-                  router.replace("/login");
                 }}
                 className="cursor-pointer ml-4 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900"
               >

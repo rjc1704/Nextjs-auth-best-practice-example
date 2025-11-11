@@ -45,7 +45,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl">
       <h1 className="text-2xl font-bold mb-6">내 프로필</h1>
 
       {error && (

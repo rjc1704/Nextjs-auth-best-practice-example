@@ -6,33 +6,19 @@ export function middleware(request) {
 
   // 쿠키에서 인증 토큰 확인
   const authToken = request.cookies.get("accessToken")?.value;
-
-  // 인증 상태 확인
   const isAuthenticated = !!authToken;
 
-  // 인증 관련 경로 확인
+  // 인증 관련 경로 (로그인, 회원가입)
   const authPaths = ["/login", "/signup"];
-  const isAuthRoute = authPaths.some((path) => pathname === path);
+  const isAuthRoute = authPaths.includes(pathname);
 
-  // 인증 요구 경로 목록 관리 (실제 URL 기준)
-
-  const isEditRoute = /^\/blogs\/[0-9]+\/edit/.test(pathname);
-  const protectedRoutes = ["/blogs/create", "/profile"];
-  // 경로와 모든 하위 경로 포함
-  const isProtectedRoute =
-    protectedRoutes.some((route) => pathname === route) || isEditRoute;
-
-  // 로그인한 사용자가 인증 경로에 접근하는 경우
+  // 로그인한 사용자가 인증 페이지에 접근하는 경우 블로그 목록으로 리다이렉트
   if (isAuthRoute && isAuthenticated) {
     return NextResponse.redirect(new URL("/blogs", request.url));
   }
 
-  // 로그인하지 않은 사용자가 보호된 경로에 접근하는 경우
-  if (isProtectedRoute && !isAuthenticated) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
   // 그 외의 경우는 정상적으로 진행
+  // 보호된 경로는 (protected)/layout.jsx에서 처리
   return NextResponse.next();
 }
 

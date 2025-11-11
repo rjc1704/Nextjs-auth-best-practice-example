@@ -20,7 +20,7 @@ export default async function BlogDetailPage({ params }) {
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="my-6">
         <Link href="/blogs" className="text-blue-500 hover:text-blue-700">
           ← 목록으로 돌아가기
         </Link>
