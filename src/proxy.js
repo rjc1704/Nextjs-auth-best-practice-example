@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export function middleware(request) {
+export function proxy(request) {
   // 현재 URL 경로 가져오기
   const { pathname } = request.nextUrl;
 
