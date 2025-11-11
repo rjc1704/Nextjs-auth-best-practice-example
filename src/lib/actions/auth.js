@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { jwtDecode } from "jwt-decode";
 import { authService } from "../service/authService";
 
 // 서버 사이드 전용 함수
@@ -14,12 +15,8 @@ export async function setServerSideTokens(accessToken, refreshToken) {
   const cookieStore = await cookies();
 
   // 토큰 디코딩 및 만료 시간 계산
-  const accessTokenData = JSON.parse(
-    Buffer.from(accessToken.split(".")[1], "base64url").toString(),
-  );
-  const refreshTokenData = JSON.parse(
-    Buffer.from(refreshToken.split(".")[1], "base64url").toString(),
-  );
+  const accessTokenData = jwtDecode(accessToken);
+  const refreshTokenData = jwtDecode(refreshToken);
 
   const accessTokenExpiresIn =
     accessTokenData.exp - Math.floor(Date.now() / 1000);
@@ -44,9 +41,7 @@ export async function updateAccessToken(accessToken) {
   const cookieStore = await cookies();
 
   // 토큰 디코딩 및 만료 시간 계산
-  const accessTokenData = JSON.parse(
-    Buffer.from(accessToken.split(".")[1], "base64url").toString(),
-  );
+  const accessTokenData = jwtDecode(accessToken);
 
   const accessTokenExpiresIn =
     accessTokenData.exp - Math.floor(Date.now() / 1000);

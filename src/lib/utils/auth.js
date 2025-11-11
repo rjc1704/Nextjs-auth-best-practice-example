@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import { getServerSideToken, setServerSideTokens } from "@/lib/actions/auth";
 
 /**
@@ -9,8 +10,8 @@ export function setTokensToCookie(accessToken, refreshToken) {
     return setServerSideTokens(accessToken, refreshToken);
   }
 
-  const accessTokenData = JSON.parse(atob(accessToken.split(".")[1]));
-  const refreshTokenData = JSON.parse(atob(refreshToken.split(".")[1]));
+  const accessTokenData = jwtDecode(accessToken);
+  const refreshTokenData = jwtDecode(refreshToken);
 
   const accessTokenExpiresIn =
     accessTokenData.exp - Math.floor(Date.now() / 1000);
