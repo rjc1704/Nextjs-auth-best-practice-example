@@ -78,6 +78,7 @@ export async function proxy(request) {
   return NextResponse.next();
 }
 
+// TODO: /blogs, blogs/[id] 경로는 보호된 경로에서 제외해보세요
 export const config = {
   matcher: [
     "/profile/:path*", // /profile, /profile/*
