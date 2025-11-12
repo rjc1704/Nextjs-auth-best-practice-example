@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { isTokenExpired, refreshAccessToken } from "./lib/utils/auth";
 
 export async function proxy(request) {
+  console.log("request::", request);
   const { pathname } = request.nextUrl;
 
   // matcher에서 이미 필터링되었으므로 여기 도달한 경로는 모두 체크 대상
@@ -78,12 +79,8 @@ export async function proxy(request) {
   return NextResponse.next();
 }
 
-// TODO: /blogs, blogs/[id] 경로는 보호된 경로에서 제외해보세요
+// TODO: app/(auth)/, app/(protected)/ 경로는 페이지 이동 전에 인증검사할 수 있도록 matcher 에 각 경로 추가해보세요
+// 참고로 라우트그룹은 matcher 경로에 추가할 수 없습니다.
 export const config = {
-  matcher: [
-    "/profile/:path*", // /profile, /profile/*
-    "/blogs/:path*", // /blogs, /blogs/*
-    "/login", // 인증 페이지
-    "/signup", // 인증 페이지
-  ],
+  matcher: [],
 };
