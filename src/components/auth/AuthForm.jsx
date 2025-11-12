@@ -1,5 +1,3 @@
-"use client";
-
 import LabelAndInput from "@/components/ui/LabelAndInput";
 import Link from "next/link";
 import React from "react";
@@ -20,12 +18,14 @@ export default function AuthForm({ type, handleAuth }) {
         type="email"
         name="email"
         placeholder="이메일을 입력해주세요."
+        autoComplete="email"
       />
       <LabelAndInput
         label="비밀번호"
         type="password"
         name="password"
         placeholder="비밀번호를 입력해주세요."
+        autoComplete={type === "signup" ? "new-password" : "current-password"}
       />
       {type === "signup" && (
         <LabelAndInput
@@ -33,6 +33,7 @@ export default function AuthForm({ type, handleAuth }) {
           type="password"
           name="confirmPassword"
           placeholder="비밀번호를 입력해주세요."
+          autoComplete="new-password"
         />
       )}
 

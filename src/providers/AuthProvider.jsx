@@ -4,7 +4,6 @@ import {
   getServerSideToken,
   loginAction,
   registerAction,
-  setServerSideTokens,
 } from "@/lib/actions/auth";
 import { authService } from "@/lib/service/authService";
 import { userService } from "@/lib/service/userService";
@@ -44,30 +43,27 @@ export default function AuthProvider({ children }) {
 
   const register = async (nickname, email, password, passwordConfirmation) => {
     // 회원가입 성공 시 유저데이터를 API 에서 응답해주는 경우, 즉시 로그인 처리 가능
-    const userData = await registerAction(
+    const { userData, success } = await registerAction(
       nickname,
       email,
       password,
       passwordConfirmation,
     );
 
-    // 토큰 저장 로직 추가
-    if (userData.accessToken && userData.refreshToken) {
-      setServerSideTokens(userData.accessToken, userData.refreshToken);
+    if (!success) {
+      throw new Error("회원가입 실패");
     }
-    setUser(userData.user);
+    setUser(userData);
   };
 
   const login = async (email, password) => {
     // 로그인 성공 시 유저데이터를 API 에서 응답해주는 경우, 유저 상태 변경
-    const userData = await loginAction(email, password);
+    const { userData, success } = await loginAction(email, password);
 
-    // 토큰 저장 로직 추가
-    if (userData.accessToken && userData.refreshToken) {
-      setServerSideTokens(userData.accessToken, userData.refreshToken);
+    if (!success) {
+      throw new Error("로그인 실패");
     }
-
-    setUser(userData.user);
+    setUser(userData);
   };
 
   const logout = async () => {
@@ -83,6 +79,7 @@ export default function AuthProvider({ children }) {
     // 웹페이지 랜딩 또는 새로고침 시 마다 서버에서 유저 데이터 동기화
     async function fetchUser() {
       const token = await getServerSideToken();
+      console.log("token::", token);
       if (token) {
         getUser().then(() => {
           setIsLoading(false);

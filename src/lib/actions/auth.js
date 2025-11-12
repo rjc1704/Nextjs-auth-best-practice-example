@@ -73,8 +73,17 @@ export async function clearServerSideTokens() {
 }
 
 export async function loginAction(email, password) {
-  const userData = await authService.login(email, password);
-  return userData;
+  const { user, accessToken, refreshToken } = await authService.login(
+    email,
+    password,
+  );
+
+  if (!accessToken || !refreshToken) {
+    return { success: false, error: "토큰 저장 실패" };
+  }
+
+  await setServerSideTokens(accessToken, refreshToken);
+  return { success: true, userData: user };
 }
 
 export async function registerAction(
@@ -83,11 +92,66 @@ export async function registerAction(
   password,
   passwordConfirmation,
 ) {
-  const userData = await authService.register(
+  const { user, accessToken, refreshToken } = await authService.register(
     nickname,
     email,
     password,
     passwordConfirmation,
   );
-  return userData;
+  // 토큰 저장 로직 추가
+  if (!accessToken || !refreshToken) {
+    return { success: false, error: "토큰 저장 실패" };
+  }
+
+  await setServerSideTokens(accessToken, refreshToken);
+  return { success: true, userData: user };
+}
+
+// src/lib/actions/auth.js에 추가
+
+/**
+ * 인증 상태를 확인하고 필요시 토큰을 갱신합니다
+ * @returns {Promise<boolean>} 인증 성공 여부
+ */
+export async function checkAndRefreshAuth() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  // 1. accessToken이 있으면 인증됨
+  if (accessToken) {
+    return true;
+  }
+
+  // 2. accessToken 없고 refreshToken도 없으면 인증 실패
+  if (!refreshToken) {
+    return false;
+  }
+
+  // 3. refreshToken으로 갱신 시도
+  try {
+    const baseURL = process.env.NEXT_PUBLIC_API_URL;
+    const response = await fetch(`${baseURL}/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
+      cache: "no-store",
+    });
+
+    if (response.ok) {
+      const { accessToken: newAccessToken } = await response.json();
+
+      // 새 토큰 저장
+      await updateAccessToken(newAccessToken);
+
+      return true; // 갱신 성공
+    }
+
+    return false; // 갱신 실패
+  } catch (error) {
+    console.error("토큰 갱신 중 오류:", error);
+    return false;
+  }
 }
