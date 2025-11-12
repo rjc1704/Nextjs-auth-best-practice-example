@@ -90,13 +90,5 @@ export async function proxy(request) {
 }
 
 export const config = {
-  matcher: [
-    // 보호된 경로
-    "/profile/:path*",
-    "/blogs/create",
-    "/blogs/:id/edit",
-    // 인증 경로
-    "/login",
-    "/signup",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
