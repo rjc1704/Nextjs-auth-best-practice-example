@@ -1,12 +1,10 @@
 "use client";
 
-import {
-  getServerSideToken,
-  loginAction,
-  registerAction,
-} from "@/lib/actions/auth";
+import { getServerSideToken, registerAction } from "@/lib/actions/auth";
 import { authService } from "@/lib/service/authService";
 import { userService } from "@/lib/service/userService";
+import { setTokensToCookie } from "@/lib/utils/auth";
+import { useRouter } from "next/navigation";
 
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -28,6 +26,7 @@ export const useAuth = () => {
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -58,18 +57,21 @@ export default function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     // 로그인 성공 시 유저데이터를 API 에서 응답해주는 경우, 유저 상태 변경
-    const { userData, success } = await loginAction(email, password);
-
-    if (!success) {
-      throw new Error("로그인 실패");
+    const userData = await authService.login(email, password);
+    // 토큰 저장 로직 추가
+    if (userData.accessToken && userData.refreshToken) {
+      console.log("userData in login", userData);
+      setTokensToCookie(userData.accessToken, userData.refreshToken);
     }
-    setUser(userData);
+
+    setUser(userData.user);
   };
 
   const logout = async () => {
     try {
       await authService.logout();
       setUser(null);
+      router.replace("/login");
     } catch (error) {
       console.error("로그아웃 실패:", error);
     }

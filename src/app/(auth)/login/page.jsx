@@ -22,6 +22,7 @@ export default function LoginPage() {
     }
     try {
       await login(email, password);
+      router.replace("/blogs");
     } catch (err) {
       setErrorMsg(err.message);
     }

@@ -4,16 +4,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import AuthFormSubmit from "@/components/auth/AuthFormSubmit";
-import AuthForm from "@/components/auth/AuthForm";
 
 export default function SignupPage() {
   const { register } = useAuth();
   const [errorMsg, setErrorMsg] = useState("");
   const router = useRouter();
 
-  async function handleSignup(formData) {
+  async function handleSignup(e) {
+    e.preventDefault();
     setErrorMsg("");
     // 비밀번호 일치 여부 확인
+    const formData = new FormData(e.target);
     const nickname = formData.get("nickname");
     const email = formData.get("email");
     const password = formData.get("password");
@@ -45,7 +46,7 @@ export default function SignupPage() {
           <p>{errorMsg}</p>
         </div>
       )}
-      <AuthForm type="signup" handleAuth={handleSignup} />
+      <AuthFormSubmit type="signup" handleAuth={handleSignup} />
     </div>
   );
 }

@@ -29,7 +29,7 @@ export async function setServerSideTokens(accessToken, refreshToken) {
     maxAge: accessTokenExpiresIn,
     sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
+    // httpOnly: true,
   });
 
   cookieStore.set("refreshToken", refreshToken, {
@@ -37,7 +37,7 @@ export async function setServerSideTokens(accessToken, refreshToken) {
     maxAge: refreshTokenExpiresIn,
     sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
+    // httpOnly: true,
   });
 }
 
@@ -56,7 +56,7 @@ export async function updateAccessToken(accessToken) {
     maxAge: accessTokenExpiresIn,
     sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
+    // httpOnly: true,
   });
 }
 
