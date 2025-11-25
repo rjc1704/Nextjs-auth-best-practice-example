@@ -29,8 +29,6 @@ export const useAuth = () => {
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(true);
-
   const getUser = async () => {
     try {
       const userData = await userService.getMe();
@@ -81,26 +79,16 @@ export default function AuthProvider({ children }) {
       const token = await getServerSideToken();
       console.log("token::", token);
       if (token) {
-        getUser().then(() => {
-          setIsLoading(false);
-        });
+        getUser();
       } else {
-        setIsLoading(false);
+        setUser(null);
       }
     }
     fetchUser();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 flex justify-center items-center bg-white/60 z-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
