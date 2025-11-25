@@ -7,7 +7,8 @@ export async function proxy(request) {
 
   // matcher에서 이미 필터링되었으므로 여기 도달한 경로는 모두 체크 대상
 
-  // 인증 페이지인지 확인
+  // 인증을 수행하는 페이지 (로그인/회원가입)
+  // = 이미 로그인한 사용자는 접근하면 안 되는 페이지
   const authPaths = ["/login", "/signup"];
   const isAuthPath = authPaths.some((path) => pathname.startsWith(path));
 
