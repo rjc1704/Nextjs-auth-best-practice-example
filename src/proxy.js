@@ -81,6 +81,6 @@ export async function proxy(request) {
 
 // TODO: app/(auth)/, app/(protected)/ 경로는 페이지 이동 전에 인증검사할 수 있도록 matcher 에 각 경로 추가해보세요
 // 참고로 라우트그룹은 matcher 경로에 추가할 수 없습니다.
-// export const config = {
-//   matcher: [],
-// };
+export const config = {
+  matcher: ["/signup"],
+};
