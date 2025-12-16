@@ -1,4 +1,4 @@
-import { getServerSideToken } from "./actions/auth";
+import { getServerSideToken, updateAccessToken } from "./actions/auth";
 
 /**
  * 기본 fetch 클라이언트 - 인증이 필요 없는 일반 요청용
@@ -64,7 +64,7 @@ export const tokenFetch = async (url, options = {}) => {
     try {
       // 토큰 갱신 요청
       const refreshToken = await getServerSideToken("refreshToken");
-      const refreshResponse = await fetch(`${baseURL}/auth/refresh`, {
+      const refreshResponse = await fetch(`${baseURL}/auth/refresh-token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,7 +75,11 @@ export const tokenFetch = async (url, options = {}) => {
 
       if (refreshResponse.ok) {
         // 토큰 갱신 성공 시 원래 요청 재시도
+        // 토큰 갱신 성공 시 Authorization 헤더에 새로운 accessToken을 넣음
+        const { accessToken: newAccessToken } = await refreshResponse.json();
+        mergedOptions.headers.Authorization = `Bearer ${newAccessToken}`;
         response = await fetch(`${baseURL}${url}`, mergedOptions);
+        await updateAccessToken(newAccessToken);
       }
     } catch (error) {
       const errorData = await refreshResponse.json();

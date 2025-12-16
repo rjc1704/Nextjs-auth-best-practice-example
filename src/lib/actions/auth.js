@@ -107,9 +107,33 @@ export async function registerAction(
   return { success: true, userData: user };
 }
 
-// src/lib/actions/auth.js에 추가
+/**
+ * 인증 상태를 확인합니다 (토큰 검사만, 갱신은 하지 않음)
+ * @returns {Promise<boolean>} 인증 성공 여부
+ */
+export async function checkAuth() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  // accessToken이 있으면 인증됨
+  return !!accessToken;
+}
 
 /**
+ * 인증 상태를 확인합니다 (accessToken 또는 refreshToken 중 하나라도 있으면 통과)
+ * @returns {Promise<boolean>} 인증 성공 여부
+ */
+export async function checkAuthWithRefresh() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  // accessToken 또는 refreshToken 중 하나라도 있으면 인증됨
+  return !!(accessToken || refreshToken);
+}
+
+/**
+ * @deprecated 더 이상 사용하지 않습니다. checkAuth() 또는 checkAuthWithRefresh()를 사용하세요.
  * 인증 상태를 확인하고 필요시 토큰을 갱신합니다
  * @returns {Promise<boolean>} 인증 성공 여부
  */
